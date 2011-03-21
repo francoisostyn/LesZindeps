@@ -116,6 +116,14 @@ public class Zindep extends GenericModel {
         return Zindep.find("from Zindep z where z.isVisible=true order by z.lastName").fetch();
     }
 
+    /**
+     * Retourne la liste trié par nom des Zindeps
+     *
+     * @return une liste triée ou vide...
+     */
+    public static List<Zindep> findAllByName() {
+        return Zindep.find("from Zindep z order by z.lastName").fetch();
+    }
 
     /**
      * Search by last name on the index field.
