@@ -7,23 +7,36 @@
     <link rel="stylesheet" type="text/css" media="screen" href="@{'public/stylesheets/style.css'}">
     <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/grid.css'}">
     <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.ico'}">
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/south-street/jquery-ui.css"/>
 
-    #{get 'moreScripts' /}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 
+#{get 'moreScripts' /}
 
 </head>
 <body>
 <div class="container_12" id="header">
     <div class="grid_5">
-        <img src="@{'public/images/logo_leszindeps.png'}" alt="Logo les Zindeps"/>
+        <a href="/"><img src="@{'public/images/logo_leszindeps.png'}" alt="Logo les Zindeps"/></a>
     </div>
 
     #{showAdminMenu /}
+    #{tagMenuNav /}
 
 </div>
 <div class="container_12" id="mainContent">
 
+<div class="grid_3 adminLeftNav">
+    #{a @Admin.showMyProfile(), class:'button small'}Mettre à jour mon profil#{/a} <br/>
+    #{a @Admin.importFromLinkedIn(), class:'button small'}Importer mon profil de LinkedIn#{/a}<br/>
+    #{a @Admin.listPropals(), class:'button small'}Proposition de mission#{/a}<br/>
+    #{a @AdminMissions.showMissions(), class:'button small'}Voir les missions des autres#{/a}<br/>
+</div>
+<div class="grid_9">
     #{doLayout /}
+</div>
 
 </div>
 

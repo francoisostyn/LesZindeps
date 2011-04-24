@@ -29,6 +29,7 @@ package controllers;
 import models.Propal;
 import models.Zindep;
 import notifiers.Mails;
+import play.Logger;
 import play.mvc.*;
 
 import java.util.Date;
@@ -65,7 +66,8 @@ public class Application extends Controller {
      * Si nous avons besoin d'un captcha, il faudra mettre le code ici.
      */
     public static void mission() {
-        render();
+        Propal propal = new Propal();
+        render(propal);
     }
 
     /**
@@ -74,13 +76,12 @@ public class Application extends Controller {
      * @param propal est la nouvelle mission
      */
     public static void submitMission(Propal propal) {
+        propal.creationDate = new Date();
         if (propal.validateAndSave() == false) {
             flash.error("Erreur, impossible de créer votre demande, merci de corriger le formulaire");
             validation.keep();
             mission();
         }
-        propal.creationDate = new Date();
-        propal.save();
 
         flash.success("Merci d'avoir proposé une mission.");
         render();

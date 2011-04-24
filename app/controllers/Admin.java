@@ -28,6 +28,7 @@ package controllers;
 
 import models.Propal;
 import models.Zindep;
+import play.Logger;
 import play.libs.OpenID;
 import play.mvc.Before;
 import play.mvc.Controller;
@@ -152,10 +153,21 @@ public class Admin extends Controller {
      * @param zindep est une sorte de DTO
      */
     public static void doUpdateMyProfile(Zindep zindep) {
+        checkAuthenticity(); // See http://www.playframework.org/documentation/1.1.1/releasenotes-1.0.2
         String id = session.get("zindepId");
         if (id == null) {
             error("Probleme avec l'authentification");
         }
+        if (zindep.id == null) {
+            flash.error("Impossible de mettre à jour votre profil.");
+            showMyProfile();
+        }
+
+        if (!id.equals(zindep.id)) {
+            flash.error("Vous ne pouvez mettre à jour que votre propre profil");
+            showMyProfile();
+        }
+
         // Validation rules
         validation.required(zindep.firstName);
         validation.maxSize(zindep.firstName, 255);
@@ -164,33 +176,35 @@ public class Admin extends Controller {
         validation.maxSize(zindep.location, 255);
         validation.maxSize(zindep.bio, 2000);
         validation.maxSize(zindep.techno, 2000);
-
+        validation.valid(zindep.blogUrl);
         validation.email(zindep.emailBackup);
 
-        // Handle errors
-        if (validation.hasErrors()) {
-            render("@showMyProfile", zindep);
-        }
+
         Zindep existing = Zindep.findById(id);
         if (existing == null) {
             flash.error("Utilisateur non trouvé");
             index();
         }
 
-        // c'est pourri et je pense qu'il y a un moyen plus intelligent pour le faire
-        existing.lastName = zindep.lastName;
-        existing.firstName = zindep.firstName;
-        existing.memberSince = zindep.memberSince;
-        existing.location = zindep.location;
-        existing.bio = zindep.bio;
-        existing.techno = zindep.techno;
-        existing.linkedInId = zindep.linkedInId;
-        existing.pictureUrl = zindep.pictureUrl;
-        existing.emailBackup= zindep.emailBackup;
-        existing.title= zindep.title;
-        existing.isVisible= zindep.isVisible;
+        // L'email n'est pas repassé à la page d'édition
+        // c'est la clé fonctionnelle. Donc on la recopie.
+        zindep.email = existing.email;
 
-        existing.save();
+        // Derniere validation globale
+        validation.valid(zindep);
+        if (validation.hasErrors()) {
+            render("@showMyProfile", zindep);
+        }
+
+        // Avec Play lorsque l'on passe une entité Zindep à une action, et qu'il y a
+        // des cases à cocher comme isVisible, il faut reprendre la map des parametres
+        // et voir si la personne a gardé la case cochée ou non.
+        // C'est pas top.
+        zindep.isVisible = (request.params.get("zindep.isVisible") != null);
+
+        // Et persiste
+        zindep.save();
+
 
         flash.success("Mise à jour effectuée");
         showMyProfile();
@@ -230,6 +244,7 @@ public class Admin extends Controller {
     /**
      * Cette fonction est appelée par l'API JS de LinkedIn lorsque l'utilisateur s'est bien authentifié.
      * Je m'en sers pour recopier l'id linkedin dans sa fiche.
+     *
      * @param linkedInId est l'id unique de chaque utilisateur.
      */
     public static void copyLinkedInProfile(String linkedInId) {
@@ -237,7 +252,7 @@ public class Admin extends Controller {
             flash.error("Param linkedInId missing");
             render();  // Ici comprendre return "ma page" car render() arrete l'execution de cette methode.
         }
-        if(linkedInId.equals("undefined")){
+        if (linkedInId.equals("undefined")) {
             flash.error("Erreur javascript, impossible de retrouver l'attribut linkedIn Id. Vérifiez la console JS.");
             render();
         }
@@ -260,6 +275,7 @@ public class Admin extends Controller {
 
     /**
      * Sauvegarde vers votre profil les parametres récuperés sur votre compte linkedin.
+     *
      * @param firstName
      * @param lastName
      * @param title
@@ -268,7 +284,7 @@ public class Admin extends Controller {
      * @param techno
      */
     public static void doUpdateMyProfileFromLinkedIn(String firstName, String lastName, String title, String pictureUrl,
-                                              String bio, String techno) {
+                                                     String bio, String techno) {
         String id = session.get("zindepId");
         if (id == null) {
             error("Probleme avec l'authentification");
@@ -279,12 +295,12 @@ public class Admin extends Controller {
             error("Zindep non trouvé");
         }
 
-        zindep.firstName=firstName;
-        zindep.lastName=lastName;
-        zindep.title=title;
-        zindep.pictureUrl=pictureUrl;
-        zindep.bio=bio;
-        zindep.techno=techno;
+        zindep.firstName = firstName;
+        zindep.lastName = lastName;
+        zindep.title = title;
+        zindep.pictureUrl = pictureUrl;
+        zindep.bio = bio;
+        zindep.techno = techno;
         zindep.save();
 
         flash.success("Votre profil a été mis à jour à partir des données de LinkedIn");

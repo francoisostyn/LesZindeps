@@ -46,7 +46,7 @@ Zindep(z0):
  emailBackup: emailbackup@letesteur.fr
 
 Zindep(z1):
- email: nmartignole@gmail.com
+ email: nmartignole@xxxxx.com
  firstName: Nicolas
  lastName: Martin
  memberSince: 20/10/2010
@@ -54,9 +54,10 @@ Zindep(z1):
  techno: Scrum,Agile,Java,Javascript,Groovy,Websphere,Tomcat,JBoss,Geronimo,Spring
  location: Paris
  isVisible: true
+ blogUrl: http://www.touilleur-express.fr/
 
 Zindep(z2):
- email: pierre1@test.fr
+ email: louis.gueye@xxxxx.com
  firstName: Jacques
  lastName: Test1
  memberSince: 21/02/2010
@@ -64,6 +65,7 @@ Zindep(z2):
  techo: Adobe Flex,GWT,Flash,Javascript,HTML,Web,CSS,Design web
  bio: Exemple de bio 1
  isVisible: true
+ blogUrl: http://deepintojee.wordpress.com/
 
 Zindep(z3):
  email: pierre2@test.fr
@@ -81,6 +83,15 @@ Zindep(z4):
  lastName: Test3
  memberSince: 12/01/2009
  location: Lyon
+ techno: Assurance,Spring,J2EE,JEE5,JEE6,Agile,Scrum,Apache Camel,Lucene,Velocity,Tomcat
+ bio: Exemple de bio 3
+
+ Zindep(z5):
+ email: hlassiege@gmail.com
+ firstName: Hugo
+ lastName: Lassiege
+ memberSince: 12/01/2009
+ location: Paris
  techno: Assurance,Spring,J2EE,JEE5,JEE6,Agile,Scrum,Apache Camel,Lucene,Velocity,Tomcat
  bio: Exemple de bio 3
 

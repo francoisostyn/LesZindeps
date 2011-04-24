@@ -1,0 +1,206 @@
+#{extends 'Admin/adminTemplate.html' /}
+#{set title:'Ajouter une mission' /}
+
+    #{ifErrors}
+    <div class="error">
+        <h2>Erreur</h2>
+        <ul>
+            #{errors}
+            <li>${error}</li>
+            #{/errors}
+        </ul>
+    </div>
+    #{/ifErrors}
+
+    #{if flash.error}
+    <div class="error">
+        <h2>${flash.error}</h2>
+    </div>
+    #{/if}
+
+    #{if flash.success}
+    <div class="successbox">
+        ${flash.success}
+    </div>
+    #{/if}
+
+    <!-- Tag play cree dans views/tags -->
+    #{jQueryValidate class:models.Mission.class, key:'mission' /}
+
+    #{form id:'joinForm', action:@doAddMission()}
+
+    <fieldset>
+        <legend>Mission</legend>
+        
+        <input type="hidden" id="mission_id" name="mission.id" value="${mission?.id}"/>
+        
+        #{field 'mission.role'}
+        <p>
+            <label for="${field.id}">Poste :</label>
+            
+             #{select field.name, value:field.value, id:field.id,  class:field.errorClass}
+				#{option 'Architecte'}Architecte#{/option}
+				#{option 'Auditeur'}Auditeur#{/option}
+				#{option 'Chef de projet'}Chef de projet#{/option}
+				#{option 'Coach Agile'}Coach Agile#{/option}
+				#{option 'Consultant fonctionnel'}Consultant fonctionnel#{/option}
+				#{option 'Développeur'}Développeur#{/option}
+				#{option 'Formateur'}Formateur#{/option}
+				#{option 'Leader technique'}Leader technique#{/option}
+				#{option 'Scrum Master'}Scrum Master#{/option}
+			 #{/select}
+            <br/>
+            <em>Cette liste permettra de faire des statistiques. Si votre poste n'apparait pas, signalez le.</em>
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+        
+        #{field 'mission.title'}
+        <p>
+            <label for="${field.id}">Titre :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}" class="${field.errorClass}"
+                   size="50" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+            <em>Un rapide descriptif de votre mission</em>
+        </p>
+        #{/}
+        
+        #{field 'mission.initialDate'}
+        <p>
+            <label for="${field.id}">Date de début :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value?.format('dd/MM/yy')}"
+                   class="${field.errorClass}"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+            <em>Format: dd/mm/yy</em>
+        </p>
+        #{/}
+        
+        #{field 'mission.endDate'}
+        <p>
+            <label for="${field.id}">Date de fin :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value?.format('dd/MM/yy')}"
+                   class="${field.errorClass}"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+            <em>Format: dd/mm/yy</em>
+        </p>
+        #{/}
+        
+        #{field 'mission.clientPrice'}
+        <p>
+            <label for="${field.id}">Votre facturation :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   placeholder="TJM net par jour que vous avez facturé"
+                   class="${field.errorClass}"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+        #{field 'mission.intermediaryPrice'}
+        <p>
+            <label for="${field.id}">Facturation au client final (si intermédiaire) :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   placeholder="Indiquez le tarif facturé au client final"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+        #{field 'mission.customer'}
+        <p>
+            <label for="${field.id}">Nom du Client :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   placeholder="Nom du client final pour lequel vous avez effectué la mission"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+            <em>Commencez à taper pour avoir une liste de choix</em>
+        </p>
+        #{/}
+        
+        #{field 'mission.intermediary'}
+        <p>
+            <label for="${field.id}">Nom de l'intermédiaire/SSII :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   placeholder="Si vous passiez par un intermédiaire, précisez son nom"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+            <em>Commencez à taper pour avoir une liste de choix</em>
+        </p>
+        #{/}
+        
+        #{field 'mission.comment'}
+        <p>
+            <label for="${field.id}">Commentaire :</label>
+            <textarea id="${field.id}" name="${field.name}" cols="60" rows="6"
+                      class="${field.errorClass}">${field.value}</textarea>
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+		#{field 'mission.location'}
+        <p>
+            <label for="${field.id}">Région :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+        #{field 'mission.country'}
+        <p>
+            <label for="${field.id}">Pays :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   size="90" maxlength="255">
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}
+        
+		#{field 'mission.exp'}
+        <p>
+            <label for="${field.id}">Votre nombre d'années d'expérience au début de la mission :</label>
+            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}"
+                   class="${field.errorClass}"
+                   placeholder="Valeur numérique, exemple : 4"
+                   size="15" maxlength="2"> année(s)
+            <span class="error">${field.error}</span><br/>
+        </p>
+        #{/}        
+        
+    </fieldset>
+
+    <script type="text/javascript" charset="utf-8">
+        $("#mission_initialDate,#mission_endDate" ).datepicker(
+        {dateFormat:'dd/mm/yy', showAnim:'fadeIn',
+            dayNamesMin:["Di","Lu","Ma","Me","Je","Ve","Sa"],
+            firstDay:'1'}
+                );
+        
+        $( "#mission_intermediary" ).autocomplete({
+            source: "@{AdminMissions.listOfIntermediaries()}",
+            minLength: 2
+        });
+        
+        $( "#mission_customer" ).autocomplete({
+            source: "@{AdminMissions.listOfCustomers()}",
+            minLength: 2
+        });  
+        
+        $( "#mission_location" ).autocomplete({
+            source: "@{AdminMissions.listOfLocations()}",
+            minLength: 2
+        });  
+    </script>
+
+
+    <p class="buttons"><input type="submit" value="Enregistrer" class="button green"/></p>
+    #{/form}
+
+

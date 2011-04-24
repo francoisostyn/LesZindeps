@@ -30,6 +30,7 @@ import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Email;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
+import play.data.validation.URL;
 import play.db.jpa.GenericModel;
 import play.templates.JavaExtensions;
 
@@ -45,6 +46,22 @@ import java.util.List;
  */
 @Entity
 public class Zindep extends GenericModel {
+    public static enum Availability {
+        NOT_AVAILABLE("Non disponible"),
+        PART_TIME_ONLY("A temps partiel"),
+        AVAILABLE("Disponible");
+
+        private String label;
+
+        Availability(String label) {
+            this.label = label;
+        }
+
+        public String toString() {
+            return label;
+        }
+    }
+
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -93,8 +110,21 @@ public class Zindep extends GenericModel {
     public String linkedInId;
 
     public String pictureUrl;
-    
+
     public boolean isVisible = false;
+
+    @MaxSize(255)
+    @URL
+    public String blogUrl;
+
+    @MaxSize(255)
+    public String twitter;
+
+    @OneToMany(mappedBy = "zindep", cascade = CascadeType.ALL)
+    public List<Mission> missions;
+
+    @Enumerated(EnumType.STRING)
+    public Availability currentAvailability;
 
 
     @Override
@@ -143,13 +173,28 @@ public class Zindep extends GenericModel {
 
 
     /**
-     * Creation d'un index lors de la modification de l'entité
+     * Creation d'un index lors de la modification de l'entité.
+     * Certains attributs ont été ajoutés après la première mise en ligne,
+     * ce qui fait que certains Zindeps n'ont pas toutes les valeurs renseignées.
+     * J'ai donc ajouté un peu de code pour s'assurer que l'entité est propre
+     * lors de la mise à jour et du nettoyage.
      */
     @PreUpdate
     @PrePersist
     void index() {
         this.index = JavaExtensions.noAccents(this.firstName).toLowerCase() + " ";
         this.index += JavaExtensions.noAccents(this.lastName).toLowerCase() + " ";
+        if ("undefined".equals(pictureUrl)) {
+            // clean up invalid image
+            pictureUrl = null;
+        }
+        if (currentAvailability == null) {
+            // for existing user in DB
+            currentAvailability = Zindep.Availability.NOT_AVAILABLE;
+        }
+        if (memberSince == null) {
+            memberSince = new Date();
+        }
     }
 
     /**
@@ -169,6 +214,14 @@ public class Zindep extends GenericModel {
         if (id == null) return null;
 
         return Zindep.find("from Zindep z where linkedInId=:pid").bind("pid", id).first();
+    }
 
+    /**
+     * Retourne la liste trié par nom des Zindeps qui veulent rendre leur profil visible.
+     *
+     * @return une liste triée ou vide... si un jour tous les zindeps venait à disparaitre ou a rendre leur profil invisible ;).
+     */
+    public static List<Zindep> findAllByName() {
+        return Zindep.find("from Zindep z order by z.lastName").fetch();
     }
 }
