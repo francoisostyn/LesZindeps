@@ -126,16 +126,28 @@ public class Zindep extends GenericModel {
     @Enumerated(EnumType.STRING)
     public Availability currentAvailability;
 
-
     @Override
     public String toString() {
-        return "Zindep {" +
-                "id=" + id +
-                ", name=" + firstName +
-                ", lastName= " + lastName +
-                "}";
+        return "Zindep{" +
+                "currentAvailability=" + currentAvailability +
+                ", id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", title='" + title + '\'' +
+                ", memberSince=" + memberSince +
+                ", location='" + location + '\'' +
+                ", index='" + index + '\'' +
+                ", bio='" + bio + '\'' +
+                ", techno='" + techno + '\'' +
+                ", emailBackup='" + emailBackup + '\'' +
+                ", linkedInId='" + linkedInId + '\'' +
+                ", pictureUrl='" + pictureUrl + '\'' +
+                ", isVisible=" + isVisible +
+                ", blogUrl='" + blogUrl + '\'' +
+                ", twitter='" + twitter + '\'' +
+                '}';
     }
-
 
     /**
      * Retourne la liste trié par nom des Zindeps qui veulent rendre leur profil visible.
@@ -214,14 +226,5 @@ public class Zindep extends GenericModel {
         if (id == null) return null;
 
         return Zindep.find("from Zindep z where linkedInId=:pid").bind("pid", id).first();
-    }
-
-    /**
-     * Retourne la liste trié par nom des Zindeps qui veulent rendre leur profil visible.
-     *
-     * @return une liste triée ou vide... si un jour tous les zindeps venait à disparaitre ou a rendre leur profil invisible ;).
-     */
-    public static List<Zindep> findAllByName() {
-        return Zindep.find("from Zindep z order by z.lastName").fetch();
     }
 }
